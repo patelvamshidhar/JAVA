@@ -2,24 +2,15 @@ pipeline {
     agent any
 
     stages {
-        stage('Clone') {
+        stage('Build & Run in Docker') {
             steps {
-                echo 'Cloning repository...'
-                checkout scm
-            }
-        }
-
-        stage('Build') {
-            steps {
-                echo 'Compiling Java file...'
-                sh 'javac HelloWorld.java'
-            }
-        }
-
-        stage('Test') {
-            steps {
-                echo 'Running the application...'
-                sh 'java HelloWorld'
+                script {
+                    // Using openjdk image to compile and run
+                    sh '''
+                    docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp openjdk:17 javac HelloWorld.java
+                    docker run --rm -v "$PWD":/usr/src/myapp -w /usr/src/myapp openjdk:17 java HelloWorld
+                    '''
+                }
             }
         }
 
